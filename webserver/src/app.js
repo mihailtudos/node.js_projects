@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
+const geoceode = require('./utils/geoceode');
+const forecast = require('./utils/forecast');
 
 const app = express();
 
@@ -40,7 +42,38 @@ app.get('/about', (req, res) => {
 })
 
 app.get('/weather', (req, res) => {
-	res.send('Hello from wather page');
+	const address = req.query.address;
+	if (!address) {
+		return res.send({
+			error: 'You must provide an address'
+		})
+	}
+	geoceode(address, (error, {lat, lon, location} = {}) => {
+		if (error) {
+			return res.send({error})
+		}
+		forecast(lat,lon, (error, response) => {
+			if (error) {
+				return res.send({error});
+			} 
+			res.send({
+				address,
+				location,
+				response
+			});
+		});
+	})
+})
+
+app.get('/products', (req, res) => {
+	if(!req.query.search) {
+		return res.send({
+			error: 'You must provide a location'
+		});
+	}
+	res.send({
+		products: []
+	});
 })
 
 app.get('/help/*', (req, res) => {
