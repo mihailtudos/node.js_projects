@@ -1,9 +1,11 @@
-const mongodb = require('mongodb');
-
-const MongoClient = mongodb.MongoClient;
+const {ObjectId, MongoClient} = require('mongodb');
 
 const connectionURL = 'mongodb://127.0.0.1:27017';
 const databaseName = 'task-manager';
+
+const id = new ObjectId();
+
+console.log(id, id.getTimestamp());
 
 MongoClient.connect(connectionURL, { useNewUrlParser: true}, (error, client) => {
 	if (error) {
@@ -12,9 +14,24 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true}, (error, client) => 
 
 	// database reference
 	const db = client.db(databaseName);
+	// const updatePromise = db.collection('users').updateOne({ _id: new ObjectId("629dcb00cf1ce7ef98e1b64b")}, {$set: { name: 'Ian' }});
 
-	db.collection('users').insertOne({
-		name: 'Mihail 2',
-		age: 22
+	// updatePromise.then((result) => {
+	// 	console.log(result);
+	// }).catch((error) => {
+	// 	console.log(error);
+	// })
+
+	// db.collection('users').updateMany({ name: 'Mihail 2'}, {
+	// 	$set: {
+	// 		name: 'Mihail Updated'
+	// 	}
+	// }).then((response) => console.log(response)).catch((error) => console.log(error));
+
+	db.collection('users').deleteMany({
+		name: 'Mihail Updated'
 	})
-})
+	.then((response) => console.log(response))
+	.catch((error) => console.log(error));
+
+});
